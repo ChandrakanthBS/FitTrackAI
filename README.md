@@ -50,7 +50,8 @@ source venv/bin/activate
 
 ### 3. Install Dependencies
 ```bash
-pip install django pillow
+pip install django
+pip install pillow
 ```
 
 ### 4. Configure Environment Variables
