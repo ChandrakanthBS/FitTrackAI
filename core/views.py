@@ -649,7 +649,7 @@ URGENT: This is an automated distress alert sent from the FitTrack AI Emergency 
     except Exception:
         pass
 
-    from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'FitTrack AI <chandrakanthbs531@gmail.com>')
+    from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'FitTrack AI <support@fittrack.com>')
 
     try:
         send_mail(

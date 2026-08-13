@@ -3,6 +3,27 @@ venv/
 env/
 ENV/
 
-# Python cache
+# Sensitive Environment Files
+.env
+*.env
+
+# SQLite Database & User Data
+db.sqlite3
+*.sqlite3
+
+# Python Cache & Compiled Files
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+.Python
+
+# Log files & Dispatch Logs
+*.log
+media/sos_emergency_alerts.log
+
+# IDE & OS Specific Files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
