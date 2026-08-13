@@ -56,9 +56,9 @@ pip install django pillow
 ### 4. Configure Environment Variables
 Create or verify the `.env` file in the root folder:
 ```env
-EMAIL_HOST_USER=chandrakanthbs531@gmail.com
+EMAIL_HOST_USER=your_email@gmail.com
 EMAIL_HOST_PASSWORD=your_gmail_app_password
-DEFAULT_FROM_EMAIL=FitTrack AI <chandrakanthbs531@gmail.com>
+DEFAULT_FROM_EMAIL=FitTrack AI <your_email@gmail.com>
 ```
 
 ### 5. Run Database Migrations
