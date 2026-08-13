@@ -1,0 +1,464 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Official Health & Telemetry Report - FitTrack AI{% endblock %}
+
+{% block extra_head %}
+<!-- Chart.js & html2pdf for Reports -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<style>
+/* Official Report Specific Styles */
+.official-report-card {
+  border: 1px solid var(--border-subtle);
+  background: #FFFFFF;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+.official-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.official-table th, .official-table td {
+  padding: 10px 14px;
+  border: 1px solid var(--border-subtle);
+  text-align: left;
+}
+
+.official-table th {
+  background: #F8FAFC;
+  color: var(--text-primary);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+}
+
+.official-section-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 2px solid var(--border-subtle);
+  padding-bottom: 8px;
+}
+
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+  .navbar, footer, .no-print {
+    display: none !important;
+  }
+  .container {
+    max-width: 100% !important;
+    padding: 0 !important;
+  }
+  .pdf-report-box {
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+  }
+  .official-table th {
+    background: #f1f5f9 !important;
+    color: #000000 !important;
+  }
+  .official-table td, .official-table th {
+    border: 1px solid #cbd5e1 !important;
+  }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container" style="padding: 36px 24px;">
+
+  <!-- Multi-Format Export Control Toolbar (Screen Only) -->
+  <div class="no-print" style="background: #FFFFFF; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 24px 28px; margin-bottom: 28px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; box-shadow: var(--shadow-sm);">
+    <div>
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+        <span class="dev-badge" style="background: var(--accent-indigo); color: white; border: none;">MULTI-FORMAT EXPORT ENGINE</span>
+        <span class="font-mono" style="font-size: 0.78rem; color: var(--text-muted);">PDF • CSV • Excel • JSON • HTML</span>
+      </div>
+      <h1 style="font-size: 1.8rem; font-weight: 800; letter-spacing: -0.03em; color: var(--text-primary);">Official Health & Biometric Report</h1>
+      <p style="color: var(--text-secondary); font-size: 0.88rem; margin-top: 2px;">Extract and download your complete biometric profile, energy balance pie charts, and nutrition/workout telemetry logs in any format.</p>
+    </div>
+
+    <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+      <a href="{% url 'dashboard' %}" class="btn btn-secondary" style="padding: 9px 14px; font-size: 0.85rem;"><i class="fas fa-arrow-left"></i> Dashboard</a>
+      
+      <!-- DIRECT PDF DOWNLOAD -->
+      <button type="button" id="downloadDirectPdfBtn" class="btn btn-primary" style="padding: 9px 18px; font-size: 0.85rem; background: linear-gradient(135deg, #059669 0%, #0284C7 100%);" title="Download PDF Document File">
+        <i class="fas fa-file-pdf"></i> Download PDF
+      </button>
+
+      <!-- CSV SPREADSHEET -->
+      <a href="{% url 'export_report_csv' %}" class="btn btn-secondary" style="padding: 9px 14px; font-size: 0.85rem; color: #059669; border-color: #A7F3D0;" title="Download CSV Spreadsheet for Excel/Google Sheets">
+        <i class="fas fa-file-csv"></i> CSV
+      </a>
+
+      <!-- EXCEL WORKBOOK -->
+      <a href="{% url 'export_report_excel' %}" class="btn btn-secondary" style="padding: 9px 14px; font-size: 0.85rem; color: #0284C7; border-color: #BAE6FD;" title="Download Excel Spreadsheet (.xls)">
+        <i class="fas fa-file-excel"></i> Excel
+      </a>
+
+      <!-- JSON DATA -->
+      <a href="{% url 'export_report_json' %}" class="btn btn-secondary" style="padding: 9px 14px; font-size: 0.85rem; color: #7C3AED; border-color: #DDD6FE;" title="Download Structured JSON Telemetry Data">
+        <i class="fas fa-file-code"></i> JSON
+      </a>
+
+      <!-- HTML ARCHIVE -->
+      <a href="{% url 'export_report_html' %}" class="btn btn-secondary" style="padding: 9px 14px; font-size: 0.85rem; color: #D97706; border-color: #FDE68A;" title="Download Standalone HTML Report File">
+        <i class="fas fa-code"></i> HTML
+      </a>
+
+      <!-- PRINT DIALOG -->
+      <button type="button" onclick="window.print()" class="btn btn-ghost" style="padding: 9px 12px; font-size: 0.85rem;" title="Print Report">
+        <i class="fas fa-print"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- PDF REPORT CONTENT CONTAINER -->
+  <div id="pdfReportArea" class="pdf-report-box official-report-card" style="padding: 40px; margin-bottom: 32px;">
+    
+    <!-- OFFICIAL INSTITUTION HEADER -->
+    <div style="border-bottom: 2px solid var(--text-primary); padding-bottom: 20px; margin-bottom: 32px; display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 20px;">
+      <div>
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+          <div style="width: 32px; height: 32px; background: #059669; color: white; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; font-weight: 800;">
+            <i class="fas fa-notes-medical"></i>
+          </div>
+          <span style="font-size: 1.1rem; font-weight: 800; letter-spacing: 0.05em; color: var(--text-secondary); text-transform: uppercase;">FITTRACK AI CLINICAL TELEMETRY SYSTEM</span>
+        </div>
+        <h2 style="font-size: 1.8rem; font-weight: 900; letter-spacing: -0.03em; color: var(--text-primary); margin: 4px 0;">
+          OFFICIAL INDIVIDUAL HEALTH & NUTRITION ASSESSMENT REPORT
+        </h2>
+        <p class="font-mono" style="color: var(--text-muted); font-size: 0.82rem; margin: 0;">
+          CLASSIFICATION: CONFIDENTIAL MEDICAL & BIOMETRIC RECORD
+        </p>
+      </div>
+
+      <div style="text-align: right;" class="font-mono">
+        <div style="background: #F1F5F9; border: 1px solid var(--border-medium); padding: 8px 14px; border-radius: var(--radius-sm); display: inline-block; text-align: left;">
+          <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Report Issue Timestamp</div>
+          <div style="font-size: 0.88rem; font-weight: 700; color: var(--text-primary);">{% now "F j, Y • H:i:s T" %}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION I: OFFICIAL USER & BIOMETRIC PROFILE (SINGLE COLUMN) -->
+    <div style="margin-bottom: 36px;">
+      <h3 class="official-section-title">
+        <i class="fas fa-id-card" style="color: var(--accent-cyan);"></i> SECTION I: SUBJECT & BIOMETRIC PROFILE
+      </h3>
+
+      <div style="overflow-x: auto;">
+        <table class="official-table" style="width: 100%;">
+          <tbody>
+            <tr>
+              <th style="width: 32%;">Full Name:</th>
+              <td style="font-weight: 700; color: var(--text-primary);">
+                {% if user.first_name %}{{ user.first_name }} {{ user.last_name }}{% else %}{{ user.email }}{% endif %}
+              </td>
+            </tr>
+            <tr>
+              <th>Account Email:</th>
+              <td class="font-mono">{{ user.email }}</td>
+            </tr>
+            <tr>
+              <th>Age & Gender:</th>
+              <td class="font-mono">{{ profile.age }} Years / {{ profile.gender }}</td>
+            </tr>
+            <tr>
+              <th>Height & Weight:</th>
+              <td class="font-mono">{{ profile.height_cm }} cm / {{ profile.weight_kg }} kg</td>
+            </tr>
+            <tr>
+              <th>Body Mass Index (BMI):</th>
+              <td>
+                <strong class="font-mono" style="font-size: 0.95rem;">{{ profile.bmi }} kg/m²</strong>
+                <span class="dev-badge" style="font-size: 0.72rem; padding: 2px 8px; margin-left: 8px;">{{ profile.bmi_category }}</span>
+              </td>
+            </tr>
+            <tr>
+              <th>Primary Health Goal:</th>
+              <td><span style="font-weight: 700; color: var(--accent-emerald);">{{ profile.get_goal_display }}</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- SECTION II: EXECUTIVE SUMMARY TELEMETRY -->
+    <div style="margin-bottom: 36px;">
+      <h3 class="official-section-title">
+        <i class="fas fa-chart-simple" style="color: var(--accent-emerald);"></i> SECTION II: EXECUTIVE ENERGY BALANCE TELEMETRY
+      </h3>
+
+      <div class="dash-stat-grid" style="grid-template-columns: repeat(4, 1fr); gap: 16px;">
+        <div class="stat-box" style="border-left: 4px solid var(--accent-emerald);">
+          <div class="val" style="color: var(--accent-emerald);">{{ total_food_cal }} kcal</div>
+          <div class="lbl">Food Intake Consumed</div>
+        </div>
+        <div class="stat-box" style="border-left: 4px solid var(--accent-rose);">
+          <div class="val" style="color: var(--accent-rose);">{{ total_burned }} kcal</div>
+          <div class="lbl">Calories Burned (Exercise)</div>
+        </div>
+        <div class="stat-box" style="border-left: 4px solid var(--accent-cyan);">
+          <div class="val" style="color: {% if net_calories > 0 %}var(--accent-cyan){% else %}var(--accent-emerald){% endif %};">
+            {{ net_calories }} kcal
+          </div>
+          <div class="lbl">Net Energy Balance</div>
+        </div>
+        <div class="stat-box" style="border-left: 4px solid var(--accent-violet);">
+          <div class="val" style="color: var(--accent-violet);">{{ total_mins }} mins</div>
+          <div class="lbl">Active Duration ({{ total_workouts }} Sessions)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION III: VISUAL TELEMETRY ANALYTICS (PIE CHARTS) -->
+    <div style="margin-bottom: 36px;">
+      <h3 class="official-section-title">
+        <i class="fas fa-chart-pie" style="color: var(--accent-violet);"></i> SECTION III: VISUAL TELEMETRY CHARTS
+      </h3>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+        
+        <!-- PIE CHART 1: FOOD INTAKE VS CALORIES BURNED -->
+        <div class="dash-card" style="border: 1px solid var(--border-subtle); padding: 20px;">
+          <h4 style="font-size: 1rem; font-weight: 700; margin-bottom: 12px; text-align: center; color: var(--text-primary);">
+            <i class="fas fa-pie-chart" style="color: var(--accent-emerald);"></i> Energy Distribution: Food Intake vs. Calories Burned
+          </h4>
+          <div style="position: relative; height: 250px;">
+            <canvas id="energyPieChart"></canvas>
+          </div>
+          <div style="display: flex; justify-content: space-around; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border-subtle); font-size: 0.82rem;" class="font-mono">
+            <div><i class="fas fa-square" style="color: #059669;"></i> Consumed: <strong>{{ total_food_cal }} kcal</strong></div>
+            <div><i class="fas fa-square" style="color: #E11D48;"></i> Burned: <strong>{{ total_burned }} kcal</strong></div>
+          </div>
+        </div>
+
+        <!-- PIE CHART 2: MACRONUTRIENT BREAKDOWN -->
+        <div class="dash-card" style="border: 1px solid var(--border-subtle); padding: 20px;">
+          <h4 style="font-size: 1rem; font-weight: 700; margin-bottom: 12px; text-align: center; color: var(--text-primary);">
+            <i class="fas fa-chart-pie" style="color: var(--accent-cyan);"></i> Macronutrient Ratio Breakdown (Grams)
+          </h4>
+          <div style="position: relative; height: 250px;">
+            <canvas id="macroDoughnutChart"></canvas>
+          </div>
+          <div style="display: flex; justify-content: space-around; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border-subtle); font-size: 0.82rem;" class="font-mono">
+            <div><i class="fas fa-square" style="color: #059669;"></i> Protein: <strong>{{ total_p }}g</strong></div>
+            <div><i class="fas fa-square" style="color: #0284C7;"></i> Carbs: <strong>{{ total_c }}g</strong></div>
+            <div><i class="fas fa-square" style="color: #7C3AED;"></i> Fats: <strong>{{ total_f }}g</strong></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SECTION IV: WORKOUT TELEMETRY LOGS -->
+    <div style="margin-bottom: 36px;">
+      <h3 class="official-section-title">
+        <i class="fas fa-dumbbell" style="color: var(--accent-rose);"></i> SECTION IV: WORKOUT & EXERCISE LOGS
+      </h3>
+      {% if exercise_logs %}
+        <div style="overflow-x: auto;">
+          <table class="official-table">
+            <thead>
+              <tr>
+                <th style="width: 15%;">Category</th>
+                <th style="width: 35%;">Exercise Name</th>
+                <th style="width: 15%;">Duration</th>
+                <th style="width: 15%;">Calories Burned</th>
+                <th style="width: 20%;">Timestamp</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for ex in exercise_logs %}
+                <tr>
+                  <td><span class="dev-badge" style="background: var(--accent-rose-light); color: var(--accent-rose); border-color: var(--accent-rose-border); font-size: 0.72rem;">{{ ex.category }}</span></td>
+                  <td><strong style="color: var(--text-primary);">{{ ex.exercise_name }}</strong></td>
+                  <td class="font-mono">{{ ex.duration_minutes }} mins</td>
+                  <td class="font-mono" style="color: var(--accent-rose); font-weight: 700;">{{ ex.calories_burned }} kcal</td>
+                  <td class="font-mono" style="color: var(--text-muted); font-size: 0.8rem;">{{ ex.created_at|date:"Y-m-d H:i" }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <p style="color: var(--text-muted); font-size: 0.88rem; font-style: italic;">No exercise activity recorded for this period.</p>
+      {% endif %}
+    </div>
+
+    <!-- SECTION V: NUTRITION & FOOD DIARY LOGS -->
+    <div style="margin-bottom: 36px;">
+      <h3 class="official-section-title">
+        <i class="fas fa-utensils" style="color: var(--accent-emerald);"></i> SECTION V: NUTRITION & FOOD INTAKE LOGS
+      </h3>
+      {% if food_logs %}
+        <div style="overflow-x: auto;">
+          <table class="official-table">
+            <thead>
+              <tr>
+                <th style="width: 15%;">Meal Type</th>
+                <th style="width: 30%;">Food Item</th>
+                <th style="width: 15%;">Energy (kcal)</th>
+                <th style="width: 20%;">Macros (P / C / F)</th>
+                <th style="width: 20%;">Timestamp</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for fl in food_logs %}
+                <tr>
+                  <td><span class="dev-badge" style="font-size: 0.72rem;">{{ fl.meal_type }}</span></td>
+                  <td><strong style="color: var(--text-primary);">{{ fl.food_name }}</strong></td>
+                  <td class="font-mono" style="color: var(--accent-emerald); font-weight: 700;">{{ fl.calories }} kcal</td>
+                  <td class="font-mono">{{ fl.protein }}g / {{ fl.carbs }}g / {{ fl.fats }}g</td>
+                  <td class="font-mono" style="color: var(--text-muted); font-size: 0.8rem;">{{ fl.created_at|date:"Y-m-d H:i" }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <p style="color: var(--text-muted); font-size: 0.88rem; font-style: italic;">No food intake entries recorded for this period.</p>
+      {% endif %}
+    </div>
+
+    <!-- OFFICIAL VERIFICATION FOOTER -->
+    <div style="border-top: 2px solid var(--border-medium); padding-top: 20px; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 20px;">
+      <div style="font-size: 0.78rem; color: var(--text-muted);" class="font-mono">
+        <p style="margin-bottom: 2px;"><strong>FITTRACK AI TELEMETRY ENGINE • CERTIFIED HEALTH ASSESSMENT</strong></p>
+        <p style="margin: 0;">This official report is generated based on verified user biometric logs and USDA FoodData Central algorithms.</p>
+      </div>
+
+      <div style="text-align: center;">
+        <div style="border-bottom: 1px solid var(--text-primary); width: 200px; margin-bottom: 4px; padding-bottom: 2px; font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; font-weight: 700; color: var(--text-primary);">
+          FitTrack AI System Core
+        </div>
+        <div style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">Official Verification Seal</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const totalFood = {{ total_food_cal|default:0 }};
+    const totalBurn = {{ total_burned|default:0 }};
+    
+    // PIE CHART 1: FOOD INTAKE VS CALORIES BURNED
+    const energyCtx = document.getElementById('energyPieChart').getContext('2d');
+    new Chart(energyCtx, {
+      type: 'pie',
+      data: {
+        labels: ['Food Intake Consumed (kcal)', 'Calories Burned (kcal)'],
+        datasets: [{
+          data: (totalFood === 0 && totalBurn === 0) ? [1, 1] : [totalFood, totalBurn],
+          backgroundColor: ['#059669', '#E11D48'],
+          borderWidth: 2,
+          borderColor: '#FFFFFF'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: { color: '#0F172A', font: { family: 'Plus Jakarta Sans', size: 11, weight: '600' } }
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                if (totalFood === 0 && totalBurn === 0) return ' No activity logged yet';
+                return ' ' + context.label + ': ' + context.raw + ' kcal';
+              }
+            }
+          }
+        }
+      }
+    });
+
+    // PIE CHART 2: MACRONUTRIENT RATIO BREAKDOWN
+    const totalP = {{ total_p|default:0 }};
+    const totalC = {{ total_c|default:0 }};
+    const totalF = {{ total_f|default:0 }};
+
+    const macroCtx = document.getElementById('macroDoughnutChart').getContext('2d');
+    new Chart(macroCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Protein (g)', 'Carbs (g)', 'Fats (g)'],
+        datasets: [{
+          data: (totalP === 0 && totalC === 0 && totalF === 0) ? [1, 1, 1] : [totalP, totalC, totalF],
+          backgroundColor: ['#059669', '#0284C7', '#7C3AED'],
+          borderWidth: 2,
+          borderColor: '#FFFFFF'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: { color: '#0F172A', font: { family: 'Plus Jakarta Sans', size: 11, weight: '600' } }
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                if (totalP === 0 && totalC === 0 && totalF === 0) return ' No macro data logged yet';
+                return ' ' + context.label + ': ' + context.raw + ' g';
+              }
+            }
+          }
+        }
+      }
+    });
+
+    // DIRECT PDF DOWNLOAD BUTTON
+    const directPdfBtn = document.getElementById('downloadDirectPdfBtn');
+    if (directPdfBtn) {
+      directPdfBtn.addEventListener('click', () => {
+        const element = document.getElementById('pdfReportArea');
+        const opt = {
+          margin:       [0.3, 0.3, 0.3, 0.3],
+          filename:     `FitTrack_AI_Report_${new Date().toISOString().slice(0,10)}.pdf`,
+          image:        { type: 'jpeg', quality: 0.98 },
+          html2canvas:  { scale: 2, useCORS: true, logging: false },
+          jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+        };
+        
+        directPdfBtn.disabled = true;
+        const originalText = directPdfBtn.innerHTML;
+        directPdfBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating PDF...';
+
+        html2pdf().set(opt).from(element).save().then(() => {
+          directPdfBtn.disabled = false;
+          directPdfBtn.innerHTML = originalText;
+        }).catch(err => {
+          console.error('PDF generation error:', err);
+          directPdfBtn.disabled = false;
+          directPdfBtn.innerHTML = originalText;
+          window.print();
+        });
+      });
+    }
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,455 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Workout & Live AI Webcam Trainer - FitTrack AI{% endblock %}
+
+{% block content %}
+<div class="container" style="padding: 40px 24px;">
+
+  <!-- LOBBY COMMAND BAR HEADER -->
+  <div style="background: #FFFFFF; border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 32px 36px; margin-bottom: 36px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 28px; box-shadow: var(--shadow-card);">
+    <div style="max-width: 680px;">
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap;">
+        <span class="dev-badge"><span class="status-dot"></span> WEBCAM AI TRAINER</span>
+        <span class="font-mono" style="font-size: 0.8rem; color: var(--text-muted);">Real-Time Pose Recognition & Voice Coaching</span>
+      </div>
+      <h1 style="font-size: 2.2rem; font-weight: 800; letter-spacing: -0.03em; color: var(--text-primary); margin-bottom: 8px; line-height: 1.2;">
+        AI Webcam Exercise & Form Coach
+      </h1>
+      <p style="color: var(--text-secondary); font-size: 0.92rem; line-height: 1.6; margin: 0;">
+        Can't go to the gym? Turn on your webcam for live computer vision pose tracking, automated rep counting, and real-time voice recommendations if your form needs correction!
+      </p>
+    </div>
+
+    <div style="display: flex; gap: 14px; flex-wrap: wrap;">
+      <a href="{% url 'dashboard' %}" class="btn btn-secondary" style="padding: 12px 24px;"><i class="fas fa-arrow-left"></i> Dashboard</a>
+    </div>
+  </div>
+
+  <!-- AI WEBCAM TRAINER SHOWCASE BANNER -->
+  <div class="dash-card" style="margin-bottom: 36px; padding: 36px; background: linear-gradient(135deg, #ECFDF5 0%, #F0F9FF 100%); border: 1px solid var(--accent-emerald-border);">
+    <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 32px; align-items: center;">
+      <div>
+        <span class="dev-badge" style="background: #FFFFFF; margin-bottom: 14px;"><i class="fas fa-camera"></i> Computer Vision Powered</span>
+        <h2 style="font-size: 1.8rem; font-weight: 800; color: var(--text-primary); margin-bottom: 12px;">Work Out from Home with Instant AI Voice Feedback</h2>
+        <p style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 20px; line-height: 1.6;">
+          Our webcam AI detects your joint posture, counts repetitions automatically, and speaks out loud to guide your posture whenever you perform an exercise incorrectly.
+        </p>
+        <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+          <button type="button" id="startWebcamTrainerBtn" class="btn btn-primary" style="padding: 12px 28px;">
+            <i class="fas fa-circle-play"></i> Start Webcam Session
+          </button>
+          <button type="button" id="aiVoiceToggle" class="btn btn-primary" style="padding: 12px 20px;">
+            <i class="fas fa-volume-high"></i> Voice AI: ON
+          </button>
+        </div>
+      </div>
+
+      <div style="background: #FFFFFF; padding: 24px; border-radius: var(--radius-md); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm);">
+        <h4 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 12px; color: var(--accent-emerald);"><i class="fas fa-circle-check"></i> Supported AI Exercises & Biomechanical Form Checks</h4>
+        <ul style="list-style: none; font-size: 0.88rem; color: var(--text-secondary);">
+          <li style="margin-bottom: 6px; display: flex; align-items: center; gap: 8px;"><i class="fas fa-check-double" style="color: var(--accent-emerald);"></i> <strong>Squats:</strong> Knee depth, torso tilt & knee tracking</li>
+          <li style="margin-bottom: 6px; display: flex; align-items: center; gap: 8px;"><i class="fas fa-check-double" style="color: var(--accent-emerald);"></i> <strong>Pushups:</strong> Chest depth, spine alignment & elbow flare</li>
+          <li style="margin-bottom: 6px; display: flex; align-items: center; gap: 8px;"><i class="fas fa-check-double" style="color: var(--accent-emerald);"></i> <strong>Bicep Curls:</strong> Elbow isolation, sway & full extension</li>
+          <li style="margin-bottom: 6px; display: flex; align-items: center; gap: 8px;"><i class="fas fa-check-double" style="color: var(--accent-emerald);"></i> <strong>Jumping Jacks:</strong> Overhead arm reach & leg width</li>
+          <li style="margin-bottom: 6px; display: flex; align-items: center; gap: 8px;"><i class="fas fa-check-double" style="color: var(--accent-emerald);"></i> <strong>Shoulder Press:</strong> Lockout height & elbow drop depth</li>
+          <li style="display: flex; align-items: center; gap: 8px;"><i class="fas fa-check-double" style="color: var(--accent-emerald);"></i> <strong>Lunges:</strong> Front knee angle & torso uprightness</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIVE WORKOUT STOPWATCH TIMER & MANUAL SESSION TRACKER -->
+  <div class="dash-card" style="margin-bottom: 36px; text-align: center; border: 1px solid var(--accent-cyan-border); background: #FFFFFF; padding: 36px; position: relative;">
+    <div style="display: inline-flex; align-items: center; gap: 6px; background: var(--accent-cyan-light); color: var(--accent-cyan); border: 1px solid var(--accent-cyan-border); padding: 4px 14px; border-radius: var(--radius-full); font-size: 0.78rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; margin-bottom: 20px;">
+      <i class="fas fa-stopwatch"></i> WORKOUT CHRONOMETER & LIVE CALORIE TRACKER
+    </div>
+    
+    <!-- TOP-DOWN WORKOUT TYPE SELECTION MENU WITH PER-SECOND BURN RATES -->
+    <div style="max-width: 680px; margin: 0 auto 24px auto; text-align: left; background: #F8FAFC; border: 1px solid var(--border-subtle); padding: 20px 24px; border-radius: var(--radius-md); box-shadow: var(--shadow-sm);">
+      <label for="workoutTypeSelect" style="display: block; font-size: 0.88rem; font-weight: 700; color: var(--text-primary); margin-bottom: 8px;">
+        <i class="fas fa-list-ul" style="color: var(--accent-cyan);"></i> Select Workout Type (Per-Second Calorie Burn Rate):
+      </label>
+      <select id="workoutTypeSelect" class="form-select font-mono" style="font-weight: 700; width: 100%; padding: 11px 16px; font-size: 0.95rem; background: #FFFFFF; border: 1px solid var(--border-medium); border-radius: var(--radius-sm); cursor: pointer;">
+        {% for w in workout_types %}
+          <option value="{{ w.name }}" data-rate="{{ w.rate_per_sec }}" data-minrate="{{ w.rate_per_min }}" data-category="{{ w.category }}">
+            {{ w.name }} — {{ w.rate_per_sec }} kcal/sec (~{{ w.rate_per_min }} kcal/min) [{{ w.category }}]
+          </option>
+        {% endfor %}
+      </select>
+
+      <!-- Live Calorie Burn Rate Detail Display Banner -->
+      <div id="rateDetailBanner" style="margin-top: 14px; padding: 14px 18px; background: linear-gradient(135deg, #ECFDF5 0%, #FFFBEB 100%); border: 1px solid var(--accent-emerald-border); border-radius: var(--radius-sm); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+        <div>
+          <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Burn Rate / Sec</span>
+          <div id="ratePerSecDisplay" class="font-mono" style="font-size: 1.35rem; font-weight: 800; color: var(--accent-rose);">
+            0.250 kcal/sec
+          </div>
+        </div>
+
+        <div>
+          <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Burn Rate / Min</span>
+          <div id="ratePerMinDisplay" class="font-mono" style="font-size: 1.35rem; font-weight: 800; color: var(--accent-amber);">
+            ~15.0 kcal/min
+          </div>
+        </div>
+
+        <div>
+          <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Category</span>
+          <div id="categoryBadge" class="dev-badge" style="margin-top: 4px; display: inline-block;">
+            HIIT
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STOPWATCH TIMER DISPLAY -->
+    <div id="workoutTimerDisplay" class="font-mono" style="font-size: 4.8rem; font-weight: 800; color: var(--accent-emerald); line-height: 1; margin-bottom: 20px; letter-spacing: 0.05em;">
+      00:00:00
+    </div>
+
+    <!-- LIVE WORKOUT STATS READOUT -->
+    <div style="display: flex; justify-content: center; gap: 24px; margin-bottom: 24px; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; flex-wrap: wrap;">
+      <div style="background: var(--bg-card); padding: 10px 20px; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
+        <span style="color: var(--text-muted);">Active Workout: </span>
+        <span id="activeWorkoutNameLabel" style="font-weight: 800; color: var(--text-primary);">Jump Rope Intense Cardio</span>
+      </div>
+      <div style="background: var(--bg-card); padding: 10px 20px; border-radius: var(--radius-sm); border: 1px solid var(--accent-rose-border);">
+        <span style="color: var(--text-muted);"><i class="fas fa-fire" style="color: var(--accent-rose);"></i> Live Burned: </span>
+        <span id="liveCaloriesBurnedDisplay" style="font-weight: 800; color: var(--accent-rose); font-size: 1.1rem;">0.0 kcal</span>
+      </div>
+    </div>
+
+    <!-- TIMER ACTION CONTROLS -->
+    <div style="display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; margin-bottom: 16px;">
+      <button type="button" id="startTimerBtn" class="btn btn-primary" style="padding: 11px 26px;"><i class="fas fa-play"></i> Start Session</button>
+      <button type="button" id="pauseTimerBtn" class="btn btn-secondary" style="padding: 11px 26px;" disabled><i class="fas fa-pause"></i> Pause</button>
+      <button type="button" id="resetTimerBtn" class="btn btn-ghost" style="padding: 11px 26px;"><i class="fas fa-rotate-right"></i> Reset</button>
+      <button type="button" id="saveSessionBtn" class="btn btn-primary" style="padding: 11px 26px; background: linear-gradient(135deg, #059669 0%, #0284C7 100%); display: none;"><i class="fas fa-save"></i> Finish & Save Session</button>
+    </div>
+
+    <div id="activeWorkoutStatus" class="font-mono" style="font-size: 0.85rem; color: var(--text-muted);">
+      Timer state: STANDBY. Press Start Session to begin live tracking.
+    </div>
+  </div>
+
+  <!-- MANUAL WORKOUT ENTRY CARD (QUICK DIRECT ENTRY) -->
+  <div class="dash-card" style="margin-bottom: 36px; padding: 32px; background: #FFFFFF; border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm);">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px; margin-bottom: 20px;">
+      <div>
+        <h3 style="font-size: 1.3rem; font-weight: 800; color: var(--text-primary); margin: 0 0 6px 0;">
+          <i class="fas fa-pen-to-square" style="color: var(--accent-cyan);"></i> Manual Workout Log Entry
+        </h3>
+        <p style="font-size: 0.88rem; color: var(--text-secondary); margin: 0;">
+          Prefer manual logging? Choose any workout type from the menu to calculate exact burned calories based on per-second burn rates.
+        </p>
+      </div>
+      <span class="dev-badge"><i class="fas fa-calculator"></i> REAL-TIME MET CALCULATOR</span>
+    </div>
+
+    <form id="manualWorkoutForm" style="display: grid; grid-template-columns: 1.5fr 1fr 1fr auto; gap: 18px; align-items: flex-end; flex-wrap: wrap;">
+      <div>
+        <label class="form-label" style="margin-bottom: 6px; font-weight: 700;">Workout Type (Dropdown Menu):</label>
+        <select id="manualSelectType" class="form-select font-mono" style="font-weight: 700; width: 100%;">
+          {% for w in workout_types %}
+            <option value="{{ w.name }}" data-rate="{{ w.rate_per_sec }}" data-minrate="{{ w.rate_per_min }}" data-category="{{ w.category }}">
+              {{ w.name }} ({{ w.rate_per_sec }} kcal/sec)
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div>
+        <label class="form-label" style="margin-bottom: 6px; font-weight: 700;">Duration (Minutes):</label>
+        <input type="number" id="manualDurationMins" class="form-input font-mono" min="1" max="600" value="30" style="font-weight: 700;">
+      </div>
+
+      <div>
+        <label class="form-label" style="margin-bottom: 6px; font-weight: 700;">Calculated Burned:</label>
+        <div id="manualCalculatedCalories" class="font-mono" style="padding: 10px 14px; background: var(--accent-rose-light); border: 1px solid var(--accent-rose-border); color: var(--accent-rose); font-weight: 800; font-size: 1.15rem; border-radius: var(--radius-sm); text-align: center;">
+          450 kcal
+        </div>
+      </div>
+
+      <div>
+        <button type="submit" class="btn btn-primary" style="padding: 12px 26px; width: 100%;">
+          <i class="fas fa-plus"></i> Save to Dashboard
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- END OF WORKOUT LOBBY CONTENT -->
+</div>
+
+<!-- AI WEBCAM TRAINER & VOICE FORM COACH MODAL INTERFACE -->
+<div id="webcamTrainerModal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.92); backdrop-filter: blur(16px); z-index: 3000; align-items: center; justify-content: center; padding: 20px; overflow-y: auto;">
+  <div style="background: #FFFFFF; border: 2px solid var(--accent-emerald); border-radius: var(--radius-lg); padding: 32px; max-width: 860px; width: 100%; box-shadow: var(--shadow-lg);">
+    
+    <!-- Modal Header -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 16px;">
+      <div>
+        <span class="dev-badge"><span class="status-dot"></span> LIVE AI VISION & VOICE COACH</span>
+        <h2 style="font-size: 1.6rem; font-weight: 800; color: var(--text-primary); margin-top: 4px;">FitTrack AI Webcam Pose Trainer</h2>
+      </div>
+      <button type="button" id="closeWebcamTrainerModal" class="btn btn-ghost" style="padding: 8px 16px;"><i class="fas fa-xmark"></i> Close</button>
+    </div>
+
+    <!-- Controls Row: Exercise Select & Stats -->
+    <div style="display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 16px; margin-bottom: 20px; align-items: center;">
+      <div>
+        <label class="form-label" style="margin-bottom: 4px;">Select Exercise to Track:</label>
+        <select id="aiTrainerExercise" class="form-select font-mono" style="font-weight: 700;">
+          <option value="Squats">Squats (Depth, Torso & Knee Tracking)</option>
+          <option value="Pushups">Pushups (Chest Depth, Spine Alignment & Elbow Flare)</option>
+          <option value="Bicep Curls">Bicep Curls (Elbow Isolation, Sway & Extension)</option>
+          <option value="Jumping Jacks">Jumping Jacks (Overhead Reach & Leg Width)</option>
+          <option value="Shoulder Press">Shoulder Press (Lockout & Drop Depth)</option>
+          <option value="Lunges">Lunges (Front Knee Angle & Upright Torso)</option>
+        </select>
+      </div>
+
+      <div style="background: var(--accent-emerald-light); border: 1px solid var(--accent-emerald-border); padding: 12px 16px; border-radius: var(--radius-sm); text-align: center;">
+        <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Repetitions Completed</span>
+        <div id="aiRepCount" class="font-mono" style="font-size: 1.8rem; font-weight: 800; color: var(--accent-emerald); line-height: 1.1;">0</div>
+      </div>
+
+      <div style="background: var(--accent-cyan-light); border: 1px solid var(--accent-cyan-border); padding: 12px 16px; border-radius: var(--radius-sm); text-align: center;">
+        <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Form Accuracy Score</span>
+        <div id="aiAccuracyScore" class="font-mono" style="font-size: 1.8rem; font-weight: 800; color: var(--accent-cyan); line-height: 1.1;">100%</div>
+      </div>
+    </div>
+
+    <!-- LIVE WEBCAM VIDEO FEED & OVERLAY CANVAS STACK -->
+    <div style="position: relative; width: 100%; height: 460px; background: #000000; border-radius: var(--radius-md); overflow: hidden; margin-bottom: 20px; box-shadow: var(--shadow-card);">
+      <!-- Visible Video Stream -->
+      <video id="webcamVideo" autoplay playsinline muted style="width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); display: block;"></video>
+      <!-- MediaPipe Skeleton Canvas Overlay -->
+      <canvas id="webcamCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none;"></canvas>
+    </div>
+
+    <!-- Real-Time Voice & Form Feedback Alert Banner -->
+    <div style="background: #F8FAFC; border: 1px solid var(--border-subtle); padding: 16px; border-radius: var(--radius-sm); margin-bottom: 24px; display: flex; align-items: center; gap: 14px;">
+      <div style="font-size: 1.5rem; color: var(--accent-emerald);"><i class="fas fa-volume-high"></i></div>
+      <div>
+        <div style="font-size: 0.78rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">AI Voice Coach Real-Time Feedback:</div>
+        <div id="aiFormFeedback" style="font-size: 1rem; font-weight: 700; color: var(--text-primary);">
+          Initializing camera feed... Position yourself in front of the lens.
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Actions -->
+    <div style="display: flex; justify-content: space-between; align-items: center; gap: 16px;">
+      <button type="button" id="stopWebcamTrainerBtn" class="btn btn-secondary"><i class="fas fa-stop"></i> Stop Camera</button>
+      
+      <button type="button" id="aiSaveWorkoutBtn" class="btn btn-primary" style="padding: 12px 28px;">
+        <i class="fas fa-save"></i> Finish & Save Workout to Dashboard
+      </button>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    let timerInterval = null;
+    let secondsElapsed = 0;
+    let isRunning = false;
+    let currentRatePerSec = 0.250;
+    let currentWorkoutName = "Jump Rope Intense Cardio";
+    let currentWorkoutCategory = "HIIT";
+
+    const workoutTypeSelect = document.getElementById('workoutTypeSelect');
+    const ratePerSecDisplay = document.getElementById('ratePerSecDisplay');
+    const ratePerMinDisplay = document.getElementById('ratePerMinDisplay');
+    const categoryBadge = document.getElementById('categoryBadge');
+    const activeWorkoutNameLabel = document.getElementById('activeWorkoutNameLabel');
+    const liveCaloriesBurnedDisplay = document.getElementById('liveCaloriesBurnedDisplay');
+
+    const timerDisplay = document.getElementById('workoutTimerDisplay');
+    const startBtn = document.getElementById('startTimerBtn');
+    const pauseBtn = document.getElementById('pauseTimerBtn');
+    const resetBtn = document.getElementById('resetTimerBtn');
+    const saveSessionBtn = document.getElementById('saveSessionBtn');
+    const statusEl = document.getElementById('activeWorkoutStatus');
+
+    // Manual Entry Form elements
+    const manualSelectType = document.getElementById('manualSelectType');
+    const manualDurationMins = document.getElementById('manualDurationMins');
+    const manualCalculatedCalories = document.getElementById('manualCalculatedCalories');
+    const manualWorkoutForm = document.getElementById('manualWorkoutForm');
+
+    function formatTime(sec) {
+      const h = String(Math.floor(sec / 3600)).padStart(2, '0');
+      const m = String(Math.floor((sec % 3600) / 60)).padStart(2, '0');
+      const s = String(sec % 60).padStart(2, '0');
+      return `${h}:${m}:${s}`;
+    }
+
+    function updateWorkoutRateInfo() {
+      if (!workoutTypeSelect) return;
+      const selectedOption = workoutTypeSelect.options[workoutTypeSelect.selectedIndex];
+      if (!selectedOption) return;
+
+      currentWorkoutName = selectedOption.value;
+      currentRatePerSec = parseFloat(selectedOption.getAttribute('data-rate')) || 0.15;
+      const ratePerMin = selectedOption.getAttribute('data-minrate') || (currentRatePerSec * 60).toFixed(1);
+      currentWorkoutCategory = selectedOption.getAttribute('data-category') || "Cardio";
+
+      if (ratePerSecDisplay) ratePerSecDisplay.textContent = `${currentRatePerSec.toFixed(3)} kcal/sec`;
+      if (ratePerMinDisplay) ratePerMinDisplay.textContent = `~${ratePerMin} kcal/min`;
+      if (categoryBadge) categoryBadge.textContent = currentWorkoutCategory;
+      if (activeWorkoutNameLabel) activeWorkoutNameLabel.textContent = currentWorkoutName;
+
+      updateLiveBurnedDisplay();
+    }
+
+    function updateLiveBurnedDisplay() {
+      const burned = secondsElapsed * currentRatePerSec;
+      if (liveCaloriesBurnedDisplay) liveCaloriesBurnedDisplay.textContent = `${burned.toFixed(1)} kcal`;
+    }
+
+    function startTimer() {
+      if (!isRunning) {
+        isRunning = true;
+        startBtn.disabled = true;
+        pauseBtn.disabled = false;
+        if (saveSessionBtn) saveSessionBtn.style.display = 'inline-flex';
+        statusEl.innerHTML = '<span style="color: var(--accent-emerald); font-weight: 700;"><i class="fas fa-spinner fa-spin"></i> WORKOUT IN PROGRESS... (' + currentRatePerSec.toFixed(3) + ' kcal/sec)</span>';
+        
+        timerInterval = setInterval(() => {
+          secondsElapsed++;
+          timerDisplay.textContent = formatTime(secondsElapsed);
+          updateLiveBurnedDisplay();
+        }, 1000);
+      }
+    }
+
+    function pauseTimer() {
+      if (isRunning) {
+        isRunning = false;
+        clearInterval(timerInterval);
+        startBtn.disabled = false;
+        pauseBtn.disabled = true;
+        statusEl.textContent = 'SESSION PAUSED.';
+      }
+    }
+
+    function resetTimer() {
+      isRunning = false;
+      clearInterval(timerInterval);
+      secondsElapsed = 0;
+      timerDisplay.textContent = '00:00:00';
+      startBtn.disabled = false;
+      pauseBtn.disabled = true;
+      if (saveSessionBtn) saveSessionBtn.style.display = 'none';
+      updateLiveBurnedDisplay();
+      statusEl.textContent = 'Timer reset. Ready for your next workout session.';
+    }
+
+    async function saveWorkoutSession() {
+      pauseTimer();
+      const mins = Math.max(1, Math.round(secondsElapsed / 60));
+      const cals = Math.round(secondsElapsed * currentRatePerSec);
+
+      if (secondsElapsed < 5) {
+        alert("Workout duration is too short to log (minimum 5 seconds).");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('submit_exercise', '1');
+      formData.append('exercise_name', currentWorkoutName);
+      formData.append('category', currentWorkoutCategory);
+      formData.append('duration_minutes', mins);
+      formData.append('calories_burned', cals);
+      formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+      try {
+        await fetch('{% url "dashboard" %}', { method: 'POST', body: formData });
+        alert(`Workout Logged! Recorded "${currentWorkoutName}" (${mins} mins, ${cals} kcal burned) to your Dashboard.`);
+        resetTimer();
+        window.location.href = '{% url "dashboard" %}';
+      } catch (err) {
+        alert(`Recorded "${currentWorkoutName}" (${mins} mins, ${cals} kcal burned)!`);
+        resetTimer();
+      }
+    }
+
+    // Manual Entry Calculation
+    function updateManualCalculation() {
+      if (!manualSelectType || !manualDurationMins || !manualCalculatedCalories) return;
+      const opt = manualSelectType.options[manualSelectType.selectedIndex];
+      if (!opt) return;
+
+      const rate = parseFloat(opt.getAttribute('data-rate')) || 0.15;
+      const mins = parseFloat(manualDurationMins.value) || 0;
+      const totalCals = Math.round(mins * 60 * rate);
+      manualCalculatedCalories.textContent = `${totalCals} kcal`;
+    }
+
+    if (workoutTypeSelect) workoutTypeSelect.addEventListener('change', updateWorkoutRateInfo);
+    if (manualSelectType) manualSelectType.addEventListener('change', updateManualCalculation);
+    if (manualDurationMins) manualDurationMins.addEventListener('input', updateManualCalculation);
+
+    if (startBtn) startBtn.addEventListener('click', startTimer);
+    if (pauseBtn) pauseBtn.addEventListener('click', pauseTimer);
+    if (resetBtn) resetBtn.addEventListener('click', resetTimer);
+    if (saveSessionBtn) saveSessionBtn.addEventListener('click', saveWorkoutSession);
+
+    if (manualWorkoutForm) {
+      manualWorkoutForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const opt = manualSelectType.options[manualSelectType.selectedIndex];
+        const name = opt ? opt.value : 'General Workout';
+        const category = opt ? (opt.getAttribute('data-category') || 'Cardio') : 'Cardio';
+        const rate = opt ? (parseFloat(opt.getAttribute('data-rate')) || 0.15) : 0.15;
+        const mins = parseInt(manualDurationMins.value, 10) || 1;
+        const cals = Math.round(mins * 60 * rate);
+
+        const formData = new FormData();
+        formData.append('submit_exercise', '1');
+        formData.append('exercise_name', name);
+        formData.append('category', category);
+        formData.append('duration_minutes', mins);
+        formData.append('calories_burned', cals);
+        formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+        try {
+          await fetch('{% url "dashboard" %}', { method: 'POST', body: formData });
+          alert(`Manual Workout Logged! Saved "${name}" (${mins} mins, ${cals} kcal) to your Dashboard.`);
+          window.location.href = '{% url "dashboard" %}';
+        } catch (err) {
+          alert(`Saved "${name}" (${mins} mins, ${cals} kcal)!`);
+        }
+      });
+    }
+
+    document.querySelectorAll('.start-routine-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const name = btn.getAttribute('data-name');
+        // Match in dropdown if available
+        if (workoutTypeSelect) {
+          for (let i = 0; i < workoutTypeSelect.options.length; i++) {
+            if (workoutTypeSelect.options[i].value === name) {
+              workoutTypeSelect.selectedIndex = i;
+              break;
+            }
+          }
+          updateWorkoutRateInfo();
+        }
+        resetTimer();
+        startTimer();
+        window.scrollTo({ top: 220, behavior: 'smooth' });
+      });
+    });
+
+    // Initial setup
+    updateWorkoutRateInfo();
+    updateManualCalculation();
+  });
+</script>
+{% endblock %}
+

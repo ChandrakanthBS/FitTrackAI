@@ -1,0 +1,268 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}FitTrack AI - Professional Fitness & Nutrition Platform{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section container" id="hero">
+  <div class="hero-content">
+    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
+      <span class="dev-badge"><span class="status-dot"></span> PLATFORM VERSION 2.4</span>
+      <span class="font-mono" style="font-size: 0.8rem; color: var(--accent-cyan);">● Next-Gen AI Health Science</span>
+    </div>
+    
+    <h1>Empowering Health & Nutrition with <span class="text-gradient">FitTrack AI</span></h1>
+    <p class="subtitle">
+      The ultimate professional food diary, multi-ingredient AI food analyzer, and live webcam workout coach. Real-time food macro breakdown, Body Mass Index telemetry, and emergency SOS tracking.
+    </p>
+
+    <div class="hero-cta">
+      {% if not user.is_authenticated %}
+        <a href="{% url 'register' %}" class="btn btn-primary" style="padding: 11px 24px;"><i class="fas fa-user-plus"></i> Get Started Free</a>
+        <a href="{% url 'signin' %}" class="btn btn-secondary" style="padding: 11px 24px;"><i class="fas fa-lock"></i> Sign In to Account</a>
+      {% else %}
+        <a href="{% url 'dashboard' %}" class="btn btn-primary" style="padding: 11px 24px;"><i class="fas fa-chart-pie"></i> Open Dashboard</a>
+      {% endif %}
+      <a href="#demo" class="btn btn-ghost" style="padding: 11px 20px;"><i class="fas fa-magic"></i> Try AI Demo</a>
+    </div>
+
+    <div style="display: flex; gap: 32px; padding-top: 20px; border-top: 1px solid var(--border-subtle);">
+      <div>
+        <div class="font-mono" style="font-size: 1.5rem; font-weight: 800; color: var(--accent-emerald);">99.4%</div>
+        <div style="font-size: 0.8rem; color: var(--text-muted);">Nutrient Accuracy</div>
+      </div>
+      <div>
+        <div class="font-mono" style="font-size: 1.5rem; font-weight: 800; color: var(--accent-cyan);">Instant</div>
+        <div style="font-size: 0.8rem; color: var(--text-muted);">Macro Breakdown</div>
+      </div>
+      <div>
+        <div class="font-mono" style="font-size: 1.5rem; font-weight: 800; color: var(--accent-violet);">SOS</div>
+        <div style="font-size: 0.8rem; color: var(--text-muted);">Emergency Protection</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-visual">
+    <div class="dash-card" style="padding: 20px; border-color: var(--border-medium);">
+      <div style="width: 100%; border-radius: var(--radius-sm); overflow: hidden; border: 1px solid var(--border-subtle);">
+        <img src="{% static 'core/images/hero_ui.jpg' %}" alt="FitTrack AI Dashboard" style="width: 100%; height: auto; display: block;">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Features Showcase Section -->
+<section style="padding: 80px 0; border-top: 1px solid var(--border-subtle);" id="features">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag"><i class="fas fa-layer-group"></i> Key Capabilities</span>
+      <h2 class="section-title">Built for Precision & Convenience</h2>
+      <p class="section-desc">Advanced features engineered for seamless tracking, macro reporting, and user safety.</p>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-bolt"></i></div>
+        <h3>High-Accuracy AI Food Recognition</h3>
+        <p>Instant decomposition of calories, protein, carbohydrates, fats, fiber, sugar, sodium, and vitamins for any dish.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-calculator"></i></div>
+        <h3>Automatic BMI Calculation</h3>
+        <p>Real-time calculation of Body Mass Index categorized into Normal, Underweight, Overweight, or Obese states.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-camera-retro" style="color: var(--accent-rose);"></i></div>
+        <h3>Live MediaPipe AI Webcam Coach</h3>
+        <p>Can't go to the gym? Turn on your webcam for real-time AI skeleton pose tracking and voice form recommendations.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-file-pdf" style="color: var(--accent-violet);"></i></div>
+        <h3>PDF Telemetry Extraction</h3>
+        <p>Generate clean, printable PDF reports of all exercise history logs and nutrition statistics.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Interactive AI Nutrient Analyzer Demo Section -->
+<section style="padding: 80px 0; border-top: 1px solid var(--border-subtle);" id="demo">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag"><i class="fas fa-wand-magic-sparkles"></i> High-Accuracy AI Food Analyzer</span>
+      <h2 class="section-title">Test FitTrack AI Live</h2>
+      <p class="section-desc">Type any dish, recipe, or meal combo (e.g. <em>Grilled Chicken Biryani with Raita</em>, <em>Protein Shake with Banana</em>, <em>Avocado Toast with Eggs</em>) to analyze.</p>
+    </div>
+
+    <div class="demo-card" style="padding: 36px;">
+      <div style="display: flex; gap: 12px; margin-bottom: 24px;">
+        <input type="text" id="aiSearchInput" class="form-input" placeholder="Type any food or dish (e.g. Chicken Biryani, Avocado Toast with Eggs, Oatmeal, Sushi Roll)..." value="Avocado Toast with Eggs" style="padding: 12px 18px; font-size: 1rem;">
+        <button type="button" id="aiSearchBtn" class="btn btn-primary" style="padding: 12px 24px;"><i class="fas fa-wand-magic-sparkles"></i> AI Analyze</button>
+      </div>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 28px;">
+        <span class="dev-badge preset-tag" data-food="Avocado Toast with Eggs" style="cursor: pointer;"><i class="fas fa-bread-slice"></i> Avocado Toast with Eggs</span>
+        <span class="dev-badge preset-tag" data-food="Chicken Biryani" style="cursor: pointer;"><i class="fas fa-bowl-rice"></i> Chicken Biryani</span>
+        <span class="dev-badge preset-tag" data-food="Grilled Chicken Salad" style="cursor: pointer;"><i class="fas fa-drumstick-bite"></i> Grilled Chicken Salad</span>
+        <span class="dev-badge preset-tag" data-food="Salmon Quinoa Bowl" style="cursor: pointer;"><i class="fas fa-fish"></i> Salmon Quinoa Bowl</span>
+        <span class="dev-badge preset-tag" data-food="Protein Shake with Banana" style="cursor: pointer;"><i class="fas fa-blender"></i> Protein Shake with Banana</span>
+        <span class="dev-badge preset-tag" data-food="Greek Yogurt with Berries" style="cursor: pointer;"><i class="fas fa-bowl-food"></i> Greek Yogurt & Berries</span>
+      </div>
+
+      <div style="background: #F8FAFC; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 28px; display: grid; grid-template-columns: 1fr 2fr; gap: 24px; align-items: center;">
+        <div style="text-align: center; border-right: 1px solid var(--border-subtle); padding-right: 24px;">
+          <h3 id="resFoodTitle" style="font-size: 1.25rem; color: var(--text-primary); margin-bottom: 4px;">Avocado Toast with Eggs</h3>
+          <div id="resServingSize" style="font-size: 0.82rem; font-weight: 700; color: #0284C7; margin-bottom: 8px;">
+            <i class="fas fa-weight-hanging"></i> Portion / Serving Size: 100g
+          </div>
+          <div class="font-mono" id="resCalories" style="font-size: 3.2rem; font-weight: 800; color: var(--accent-emerald); line-height: 1;">410</div>
+          <div style="font-size: 0.78rem; color: var(--text-muted); text-transform: uppercase; font-family: 'JetBrains Mono', monospace; margin-top: 4px;">Energy Output (kcal)</div>
+          <div id="resVitamins" style="font-size: 0.8rem; color: var(--accent-cyan); margin-top: 12px; font-weight: 600; line-height: 1.4;">
+            Micronutrients: Vitamin E, K, B6, B12, Potassium, Folate • Accuracy: 98.5%
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+          <div style="background: #FFFFFF; padding: 16px; border-radius: var(--radius-xs); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm);">
+            <div style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 4px;">Protein</div>
+            <div class="font-mono" id="resProtein" style="font-size: 1.3rem; font-weight: 800; color: var(--accent-emerald);">17g</div>
+            <div class="progress-track" style="height: 4px; background: #E2E8F0; margin-top: 8px;"><div class="progress-fill fill-protein" id="protBar" style="width: 25%; background: var(--accent-emerald);"></div></div>
+          </div>
+
+          <div style="background: #FFFFFF; padding: 16px; border-radius: var(--radius-xs); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm);">
+            <div style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 4px;">Carbohydrates</div>
+            <div class="font-mono" id="resCarbs" style="font-size: 1.3rem; font-weight: 800; color: var(--accent-cyan);">38g</div>
+            <div class="progress-track" style="height: 4px; background: #E2E8F0; margin-top: 8px;"><div class="progress-fill fill-carbs" id="carbBar" style="width: 45%; background: var(--accent-cyan);"></div></div>
+          </div>
+
+          <div style="background: #FFFFFF; padding: 16px; border-radius: var(--radius-xs); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm);">
+            <div style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 4px;">Healthy Fats</div>
+            <div class="font-mono" id="resFats" style="font-size: 1.3rem; font-weight: 800; color: var(--accent-violet);">23g</div>
+            <div class="progress-track" style="height: 4px; background: #E2E8F0; margin-top: 8px;"><div class="progress-fill fill-fats" id="fatBar" style="width: 50%; background: var(--accent-violet);"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 100+ INDIAN FOOD OPTIONS DATASET EXPLORER -->
+      <div style="margin-top: 36px; background: #FFFFFF; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 28px; box-shadow: var(--shadow-sm);">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 20px;">
+          <div>
+            <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary); margin: 0 0 4px 0; display: flex; align-items: center; gap: 8px;">
+              <i class="fas fa-bowl-food" style="color: var(--accent-emerald);"></i> Explore 500+ Searchable Indian & Global Food Options
+            </h3>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0;">
+              Click or search any Indian dish, curry, sweet, snack, or food item below to calculate instant AI calorie & macronutrient breakdown!
+            </p>
+          </div>
+
+          <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+            <input type="text" id="foodFilterInput" class="form-input font-mono" placeholder="Search 500+ foods (e.g. Biryani, Paneer, Roti, Dosa, Gulab Jamun, Momos, Chai)..." style="padding: 8px 14px; font-size: 0.85rem; width: 340px;">
+            <span class="dev-badge" style="background: var(--accent-emerald-light); color: var(--accent-emerald); font-weight: 800; font-size: 0.85rem;">501 Foods Available</span>
+          </div>
+        </div>
+
+        <!-- Category Filter Tabs -->
+        <div id="categoryTabs" style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px;">
+          <button type="button" class="btn btn-primary cat-tab active" data-cat="all" style="padding: 6px 14px; font-size: 0.8rem;">All (500+)</button>
+          <button type="button" class="btn btn-secondary cat-tab" data-cat="Grains & Staples" style="padding: 6px 14px; font-size: 0.8rem;">Grains & Staples</button>
+          <button type="button" class="btn btn-secondary cat-tab" data-cat="Dals & Pulses" style="padding: 6px 14px; font-size: 0.8rem;">Dals & Pulses</button>
+          <button type="button" class="btn btn-secondary cat-tab" data-cat="Paneer & Veg Curries" style="padding: 6px 14px; font-size: 0.8rem;">Paneer & Veg</button>
+          <button type="button" class="btn btn-secondary cat-tab" data-cat="Non-Veg Dishes" style="padding: 6px 14px; font-size: 0.8rem;">Non-Veg</button>
+          <button type="button" class="btn btn-secondary cat-tab" data-cat="Snacks & Street Food" style="padding: 6px 14px; font-size: 0.8rem;">Snacks & Street Food</button>
+          <button type="button" class="btn btn-secondary cat-tab" data-cat="Dairy & Drinks" style="padding: 6px 14px; font-size: 0.8rem;">Dairy & Drinks</button>
+          <button type="button" class="btn btn-secondary cat-tab" data-cat="Sweets & Desserts" style="padding: 6px 14px; font-size: 0.8rem;">Sweets & Desserts</button>
+          <button type="button" class="btn btn-secondary cat-tab" data-cat="Fruits & Nuts" style="padding: 6px 14px; font-size: 0.8rem;">Fruits & Nuts</button>
+        </div>
+
+        <!-- Food Chips Grid (110 Items) -->
+        <div id="foodChipsGrid" style="display: flex; flex-wrap: wrap; gap: 8px; max-height: 380px; overflow-y: auto; padding: 14px; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); background: #F8FAFC;">
+          {% for food_name, data in sample_foods.items %}
+            <span class="dev-badge preset-tag food-option-chip" data-food="{{ food_name }}" data-category="{{ data.category }}" style="cursor: pointer; padding: 8px 14px; font-size: 0.85rem; background: #FFFFFF; border: 1px solid var(--border-medium); color: var(--text-primary); transition: all 0.15s ease; user-select: none;">
+              <i class="fas fa-utensils" style="color: var(--accent-emerald);"></i> <strong>{{ food_name|title }}</strong>
+            </span>
+          {% endfor %}
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT SECTION (#about) -->
+<section style="padding: 80px 0; border-top: 1px solid var(--border-subtle);" id="about">
+  <div class="container">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center;">
+      <div>
+        <span class="section-tag"><i class="fas fa-circle-info"></i> About Platform</span>
+        <h2 style="font-size: 2.2rem; font-weight: 800; margin-bottom: 16px; letter-spacing: -0.03em; color: var(--text-primary);">Intelligent Health Engineering</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 20px; line-height: 1.7;">
+          <strong>FitTrack AI</strong> replaces static food counters with an automated AI data pipeline. By standardizing macronutrient ratios, Body Mass Index tracking, and workout chronometry, we provide empirical health telemetry.
+        </p>
+        <ul style="list-style: none;">
+          <li style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-weight: 600;"><i class="fas fa-check" style="color: var(--accent-emerald);"></i> Automated Multi-Ingredient Macro & Calorie Telemetry</li>
+          <li style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-weight: 600;"><i class="fas fa-check" style="color: var(--accent-emerald);"></i> Real-Time Body Mass Index Categorization</li>
+          <li style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-weight: 600;"><i class="fas fa-check" style="color: var(--accent-emerald);"></i> Instant Emergency SOS Contact Alerting</li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="dash-card" style="padding: 20px;">
+          <img src="{% static 'core/images/ai_tech.jpg' %}" alt="FitTrack AI Science Hologram" style="width: 100%; height: auto; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT US SECTION (#about-us) --> <section style="padding: 80px 0; border-top: 1px solid var(--border-subtle); background: #F8FAFC;" id="about-us"> <div class="container"> <div class="section-header"> <span class="section-tag"><i class="fas fa-users"></i> About Us</span> <h2 class="section-title">Meet Our Team</h2> <p class="section-desc">The team behind FitTrack AI, working together to build an intelligent health and fitness platform.</p> </div> <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px;"> <!-- Chandrakanth B S --> <div class="feature-card" style="text-align: center;"> <div class="feature-icon" style="margin: 0 auto 16px;"> <i class="fas fa-user"></i> </div> <h3>Chandrakanth B S</h3> <p style="margin-bottom: 8px;"> <strong>USN:</strong> 1RN23CS054 </p> <p> <strong>Email:</strong> Not provided </p> </div> <!-- Manohara S --> <div class="feature-card" style="text-align: center;"> <div class="feature-icon" style="margin: 0 auto 16px;"> <i class="fas fa-user"></i> </div> <h3>Manohara S</h3> <p style="margin-bottom: 8px;"> <strong>USN:</strong> 1RN23CS255 </p> <p> <strong>Email:</strong> Not provided </p> </div> <!-- Anurag Sahu --> <div class="feature-card" style="text-align: center;"> <div class="feature-icon" style="margin: 0 auto 16px;"> <i class="fas fa-user"></i> </div> <h3>Anurag Sahu</h3> <p style="margin-bottom: 8px;"> <strong>USN:</strong> 1RN23CS030 </p> <p> <strong>Email:</strong> Not provided </p> </div> <!-- B Ankitha --> <div class="feature-card" style="text-align: center;"> <div class="feature-icon" style="margin: 0 auto 16px;"> <i class="fas fa-user"></i> </div> <h3>B Ankitha</h3> <p style="margin-bottom: 8px;"> <strong>USN:</strong> 1RN23CS038 </p> <p> <strong>Email:</strong> Not provided </p> </div> </div> </div> </section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const foodFilterInput = document.getElementById('foodFilterInput');
+    const foodChips = document.querySelectorAll('.food-option-chip');
+    const catTabs = document.querySelectorAll('.cat-tab');
+    let activeCat = 'all';
+
+    function filterChips() {
+      const q = foodFilterInput ? foodFilterInput.value.toLowerCase().trim() : '';
+      foodChips.forEach(chip => {
+        const name = chip.getAttribute('data-food').toLowerCase();
+        const cat = chip.getAttribute('data-category');
+
+        const matchesQuery = !q || name.includes(q);
+        const matchesCat = (activeCat === 'all') || (cat === activeCat);
+
+        if (matchesQuery && matchesCat) {
+          chip.style.display = 'inline-flex';
+        } else {
+          chip.style.display = 'none';
+        }
+      });
+    }
+
+    if (foodFilterInput) {
+      foodFilterInput.addEventListener('input', filterChips);
+    }
+
+    catTabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        catTabs.forEach(t => {
+          t.classList.remove('btn-primary', 'active');
+          t.classList.add('btn-secondary');
+        });
+        tab.classList.remove('btn-secondary');
+        tab.classList.add('btn-primary', 'active');
+
+        activeCat = tab.getAttribute('data-cat');
+        filterChips();
+      });
+    });
+  });
+</script>
+{% endblock %}

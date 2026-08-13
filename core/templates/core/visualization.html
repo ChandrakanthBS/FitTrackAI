@@ -1,0 +1,321 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Visualization Graphs & Food Intake - FitTrack AI{% endblock %}
+
+{% block extra_head %}
+<!-- Chart.js for Exercise & Food Intake Visualization -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container" style="padding: 40px 24px;">
+
+  <!-- PAGE HEADER -->
+  <div style="background: #FFFFFF; border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 32px 36px; margin-bottom: 36px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 28px; box-shadow: var(--shadow-card);">
+    <div style="max-width: 680px;">
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap;">
+        <span class="dev-badge" style="background: var(--accent-cyan-light); color: var(--accent-cyan); border-color: var(--accent-cyan-border);">
+          <i class="fas fa-chart-line"></i> TELEMETRY ENGINE
+        </span>
+        <span class="font-mono" style="font-size: 0.8rem; color: var(--text-muted);">Exercise & Food Intake Analytics</span>
+      </div>
+      <h1 style="font-size: 2.2rem; font-weight: 800; letter-spacing: -0.03em; color: var(--text-primary); margin-bottom: 8px; line-height: 1.2;">
+        Food Intake & Exercise Telemetry
+      </h1>
+      <p style="color: var(--text-secondary); font-size: 0.92rem; line-height: 1.6; margin: 0;">
+        Graphical telemetry metrics derived from your logged food meals, calorie intake, protein breakdown, and exercise sessions.
+      </p>
+    </div>
+
+    <div style="display: flex; gap: 14px; flex-wrap: wrap;">
+      <a href="{% url 'dashboard' %}" class="btn btn-secondary" style="padding: 12px 24px;"><i class="fas fa-arrow-left"></i> Dashboard</a>
+      <a href="{% url 'workout_lobby' %}" class="btn btn-primary" style="padding: 12px 24px;"><i class="fas fa-dumbbell"></i> Workout</a>
+      <a href="{% url 'reports' %}" class="btn btn-ghost" style="padding: 12px 24px;"><i class="fas fa-file-invoice"></i> Report</a>
+    </div>
+  </div>
+
+  <!-- GRAPH VISUALIZATION CARDS GRID -->
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 28px; margin-bottom: 36px;">
+    
+    <!-- CHART 1: FOOD CALORIE INTAKE VS EXERCISE BURNED -->
+    <div class="dash-card" style="padding: 32px; background: #FFFFFF;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+        <div>
+          <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary); margin: 0; display: flex; align-items: center; gap: 8px;">
+            <i class="fas fa-utensils" style="color: var(--accent-emerald);"></i> Food Intake vs Exercise Burn
+          </h3>
+          <p style="color: var(--text-secondary); font-size: 0.82rem; margin-top: 4px;">
+            Daily food calorie intake (emerald) vs exercise calories burned (rose).
+          </p>
+        </div>
+        <span class="dev-badge" style="background: var(--accent-emerald-light); color: var(--accent-emerald);">Calorie Balance</span>
+      </div>
+
+      {% if has_real_data %}
+        <div style="position: relative; height: 320px; width: 100%;">
+          <canvas id="calorieComparisonChart"></canvas>
+        </div>
+      {% else %}
+        <div style="text-align: center; padding: 50px 20px; background: #F8FAFC; border: 2px dashed var(--border-subtle); border-radius: var(--radius-md);">
+          <div style="font-size: 2.5rem; color: var(--text-dim); margin-bottom: 12px;"><i class="fas fa-chart-bar"></i></div>
+          <h4 style="font-size: 1.1rem; font-weight: 800; color: var(--text-primary); margin-bottom: 6px;">No Food or Exercise Logged</h4>
+          <p style="color: var(--text-secondary); font-size: 0.84rem; max-width: 380px; margin: 0 auto 16px;">
+            Log your meals and workouts on the Dashboard to see your live calorie comparison chart!
+          </p>
+          <a href="{% url 'dashboard' %}" class="btn btn-primary" style="padding: 8px 16px; font-size: 0.85rem;"><i class="fas fa-plus-circle"></i> Log Food / Workout</a>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- CHART 2: PROTEIN & MACRO NUTRITION INTAKE TELEMETRY -->
+    <div class="dash-card" style="padding: 32px; background: #FFFFFF;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+        <div>
+          <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary); margin: 0; display: flex; align-items: center; gap: 8px;">
+            <i class="fas fa-drumstick-bite" style="color: var(--accent-cyan);"></i> Protein & Macro Intake Breakdown
+          </h3>
+          <p style="color: var(--text-secondary); font-size: 0.82rem; margin-top: 4px;">
+            Daily protein (cyan), carbs (amber), and fats (violet) intake trends (grams).
+          </p>
+        </div>
+        <span class="dev-badge" style="background: #E0F2FE; color: #0284C7;">Macro Trends</span>
+      </div>
+
+      {% if has_real_data %}
+        <div style="position: relative; height: 320px; width: 100%;">
+          <canvas id="macroIntakeChart"></canvas>
+        </div>
+      {% else %}
+        <div style="text-align: center; padding: 50px 20px; background: #F8FAFC; border: 2px dashed var(--border-subtle); border-radius: var(--radius-md);">
+          <div style="font-size: 2.5rem; color: var(--text-dim); margin-bottom: 12px;"><i class="fas fa-chart-line"></i></div>
+          <h4 style="font-size: 1.1rem; font-weight: 800; color: var(--text-primary); margin-bottom: 6px;">No Macro Data Logged</h4>
+          <p style="color: var(--text-secondary); font-size: 0.84rem; max-width: 380px; margin: 0 auto 16px;">
+            Log your meals to visualize protein, carbs, and fats intake trends!
+          </p>
+          <a href="{% url 'dashboard' %}" class="btn btn-primary" style="padding: 8px 16px; font-size: 0.85rem;"><i class="fas fa-plus-circle"></i> Log Food Meal</a>
+        </div>
+      {% endif %}
+    </div>
+
+  </div>
+
+  <!-- TABLES GRID FOR LOGGED FOOD AND LOGGED EXERCISES -->
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 28px;">
+    
+    <!-- TABLE 1: LOGGED FOOD & MEALS -->
+    <div class="dash-card" style="padding: 28px; background: #FFFFFF;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 14px;">
+        <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text-primary); margin: 0; display: flex; align-items: center; gap: 8px;">
+          <i class="fas fa-utensils" style="color: var(--accent-emerald);"></i> Logged Food Meals
+        </h3>
+        <span class="dev-badge">{{ user_food_logs.count }} Meal Logs</span>
+      </div>
+
+      {% if user_food_logs %}
+        <div style="overflow-x: auto; max-height: 380px;">
+          <table class="log-table">
+            <thead>
+              <tr>
+                <th>Meal</th>
+                <th>Food Item</th>
+                <th>Calories</th>
+                <th>Protein (g)</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for fl in user_food_logs %}
+                <tr>
+                  <td><span class="dev-badge">{{ fl.meal_type }}</span></td>
+                  <td><strong style="color: var(--text-primary);">{{ fl.food_name }}</strong></td>
+                  <td class="font-mono" style="color: var(--accent-emerald); font-weight: 700;">{{ fl.calories }} kcal</td>
+                  <td class="font-mono" style="color: #0284C7; font-weight: 700;">{{ fl.protein }}g</td>
+                  <td class="font-mono" style="color: var(--text-muted); font-size: 0.82rem;">{{ fl.created_at|date:"M d, H:i" }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <p style="color: var(--text-muted); text-align: center; padding: 32px 0; font-size: 0.88rem;">No food items logged yet.</p>
+      {% endif %}
+    </div>
+
+    <!-- TABLE 2: LOGGED EXERCISES -->
+    <div class="dash-card" style="padding: 28px; background: #FFFFFF;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 14px;">
+        <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text-primary); margin: 0; display: flex; align-items: center; gap: 8px;">
+          <i class="fas fa-fire-flame-curved" style="color: var(--accent-rose);"></i> Logged Exercise Sessions
+        </h3>
+        <span class="dev-badge" style="background: var(--accent-rose-light); color: var(--accent-rose); border-color: var(--accent-rose-border);">{{ user_exercise_logs.count }} Sessions</span>
+      </div>
+
+      {% if user_exercise_logs %}
+        <div style="overflow-x: auto; max-height: 380px;">
+          <table class="log-table">
+            <thead>
+              <tr>
+                <th>Category</th>
+                <th>Exercise</th>
+                <th>Duration</th>
+                <th>Burned</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for ex in user_exercise_logs %}
+                <tr>
+                  <td><span class="dev-badge" style="background: var(--accent-rose-light); color: var(--accent-rose); border-color: var(--accent-rose-border);">{{ ex.category }}</span></td>
+                  <td><strong style="color: var(--text-primary);">{{ ex.exercise_name }}</strong></td>
+                  <td class="font-mono">{{ ex.duration_minutes }}m</td>
+                  <td class="font-mono" style="color: var(--accent-rose); font-weight: 700;">{{ ex.calories_burned }} kcal</td>
+                  <td class="font-mono" style="color: var(--text-muted); font-size: 0.82rem;">{{ ex.created_at|date:"M d, H:i" }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <p style="color: var(--text-muted); text-align: center; padding: 32px 0; font-size: 0.88rem;">No exercise records found.</p>
+      {% endif %}
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+{% if has_real_data %}
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const labels = {{ chart_labels_json|safe }};
+    const burnedData = {{ chart_burned_json|safe }};
+    const durationData = {{ chart_duration_json|safe }};
+    const intakeData = {{ chart_intake_json|safe }};
+    const proteinData = {{ chart_protein_json|safe }};
+    const carbsData = {{ chart_carbs_json|safe }};
+    const fatsData = {{ chart_fats_json|safe }};
+
+    // Chart 1: Food Calorie Intake vs Exercise Burned
+    const ctx1 = document.getElementById('calorieComparisonChart');
+    if (ctx1) {
+      new Chart(ctx1.getContext('2d'), {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'Food Calorie Intake (kcal)',
+              data: intakeData,
+              backgroundColor: 'rgba(16, 185, 129, 0.85)',
+              borderColor: '#10B981',
+              borderWidth: 1,
+              borderRadius: 6,
+            },
+            {
+              label: 'Exercise Calories Burned (kcal)',
+              data: burnedData,
+              backgroundColor: 'rgba(225, 29, 72, 0.85)',
+              borderColor: '#E11D48',
+              borderWidth: 1,
+              borderRadius: 6,
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              labels: {
+                color: '#0F172A',
+                font: { family: 'Plus Jakarta Sans', weight: '700', size: 12 }
+              }
+            }
+          },
+          scales: {
+            x: {
+              ticks: { color: '#475569', font: { family: 'JetBrains Mono', size: 11 } },
+              grid: { color: 'rgba(15, 23, 42, 0.04)' }
+            },
+            y: {
+              ticks: { color: '#0F172A', font: { family: 'JetBrains Mono', size: 11 } },
+              grid: { color: 'rgba(15, 23, 42, 0.04)' },
+              title: { display: true, text: 'Calories (kcal)', color: '#0F172A', font: { size: 11, weight: 'bold' } }
+            }
+          }
+        }
+      });
+    }
+
+    // Chart 2: Protein & Macro Nutrition Intake Breakdown
+    const ctx2 = document.getElementById('macroIntakeChart');
+    if (ctx2) {
+      new Chart(ctx2.getContext('2d'), {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'Protein Intake (g)',
+              data: proteinData,
+              borderColor: '#0284C7',
+              backgroundColor: 'rgba(2, 132, 199, 0.1)',
+              borderWidth: 3,
+              tension: 0.35,
+              pointRadius: 5,
+              pointBackgroundColor: '#0284C7',
+            },
+            {
+              label: 'Carbs Intake (g)',
+              data: carbsData,
+              borderColor: '#D97706',
+              backgroundColor: 'rgba(217, 119, 6, 0.1)',
+              borderWidth: 2,
+              tension: 0.35,
+              pointRadius: 4,
+              pointBackgroundColor: '#D97706',
+            },
+            {
+              label: 'Fats Intake (g)',
+              data: fatsData,
+              borderColor: '#8B5CF6',
+              backgroundColor: 'rgba(139, 92, 246, 0.1)',
+              borderWidth: 2,
+              tension: 0.35,
+              pointRadius: 4,
+              pointBackgroundColor: '#8B5CF6',
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              labels: {
+                color: '#0F172A',
+                font: { family: 'Plus Jakarta Sans', weight: '700', size: 12 }
+              }
+            }
+          },
+          scales: {
+            x: {
+              ticks: { color: '#475569', font: { family: 'JetBrains Mono', size: 11 } },
+              grid: { color: 'rgba(15, 23, 42, 0.04)' }
+            },
+            y: {
+              ticks: { color: '#0284C7', font: { family: 'JetBrains Mono', size: 11 } },
+              grid: { color: 'rgba(15, 23, 42, 0.04)' },
+              title: { display: true, text: 'Grams (g)', color: '#0284C7', font: { size: 11, weight: 'bold' } }
+            }
+          }
+        }
+      });
+    }
+
+  });
+</script>
+{% endif %}
+{% endblock %}

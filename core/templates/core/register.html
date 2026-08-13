@@ -1,0 +1,169 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Account Registration - FitTrack AI{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper" style="padding: 40px 20px;">
+  <div class="auth-card" style="max-width: 540px; background: #FFFFFF;">
+    <div class="auth-header">
+      <div class="logo-icon" style="width: 44px; height: 44px; margin: 0 auto 14px; font-size: 1.3rem; background: var(--gradient-primary); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; color: #FFFFFF; box-shadow: var(--shadow-emerald);">
+        <i class="fas fa-bolt"></i>
+      </div>
+      <h2>Account Registration</h2>
+      <p>Initialize account with biometric BMI calculation & SOS emergency backup</p>
+    </div>
+
+    <form method="post" action="{% url 'register' %}" id="registerForm">
+      {% csrf_token %}
+
+      <!-- First & Last Name Grid -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+        <div class="form-group">
+          <label class="form-label" for="id_first_name"><i class="fas fa-user"></i> First Name</label>
+          {{ form.first_name }}
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="id_last_name"><i class="fas fa-user"></i> Last Name</label>
+          {{ form.last_name }}
+        </div>
+      </div>
+
+      <!-- Email ID -->
+      <div class="form-group">
+        <label class="form-label" for="id_email"><i class="fas fa-envelope"></i> Registered Email ID</label>
+        {{ form.email }}
+      </div>
+
+      <!-- SOS Contact Info -->
+      <div class="form-group">
+        <label class="form-label" for="id_sos_contact"><i class="fas fa-triangle-exclamation" style="color: var(--accent-rose);"></i> SOS Contact (Email / Phone)</label>
+        {{ form.sos_contact }}
+        <small style="color: var(--text-muted); font-size: 0.76rem; display: block; margin-top: 4px; font-family: 'JetBrains Mono', monospace;">Target contact for high-priority emergency alerts.</small>
+      </div>
+
+      <!-- Age & Gender Grid -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+        <div class="form-group">
+          <label class="form-label" for="id_age"><i class="fas fa-calendar"></i> Age</label>
+          {{ form.age }}
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="id_gender"><i class="fas fa-venus-mars"></i> Gender</label>
+          {{ form.gender }}
+        </div>
+      </div>
+
+      <!-- Height & Weight Grid -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+        <div class="form-group">
+          <label class="form-label" for="id_height_cm"><i class="fas fa-ruler-vertical"></i> Height (cm)</label>
+          {{ form.height_cm }}
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="id_weight_kg"><i class="fas fa-weight-scale"></i> Weight (kg)</label>
+          {{ form.weight_kg }}
+        </div>
+      </div>
+
+      <!-- Activity Level & Fitness Goal Grid -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+        <div class="form-group">
+          <label class="form-label" for="id_activity_level"><i class="fas fa-person-running"></i> Activity Level</label>
+          {{ form.activity_level }}
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="id_goal"><i class="fas fa-bullseye"></i> Fitness Goal</label>
+          {{ form.goal }}
+        </div>
+      </div>
+
+      <!-- Live Calculated BMI & Recommended Calorie Target Preview -->
+      <div style="background: var(--accent-emerald-light); border: 1px dashed var(--accent-emerald); border-radius: var(--radius-sm); padding: 14px 16px; margin-bottom: 18px;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+          <div>
+            <span style="font-size: 0.75rem; color: var(--text-secondary); font-weight: 700; text-transform: uppercase; font-family: 'JetBrains Mono', monospace;">Live BMI Score</span>
+            <div id="liveBmiVal" class="font-mono" style="font-size: 1.4rem; font-weight: 800; color: var(--accent-emerald);">22.9</div>
+          </div>
+          <div id="liveBmiCategory" class="dev-badge" style="background: var(--accent-emerald); color: #FFFFFF; font-size: 0.8rem; padding: 4px 10px;">
+            Normal Weight
+          </div>
+        </div>
+        <div style="border-top: 1px dashed var(--accent-emerald-border); padding-top: 8px; margin-top: 8px; display: flex; justify-content: space-between; font-size: 0.82rem;">
+          <span style="color: var(--text-secondary);"><i class="fas fa-fire"></i> Estimated Daily Calorie Goal:</span>
+          <strong id="liveCalGoal" class="font-mono" style="color: var(--accent-emerald);">1950 kcal / day</strong>
+        </div>
+      </div>
+
+      <!-- Passwords Grid -->
+      <div class="form-group">
+        <label class="form-label" for="id_password"><i class="fas fa-lock"></i> Password</label>
+        {{ form.password }}
+        <small style="color: var(--text-muted); font-size: 0.76rem; display: block; margin-top: 4px; font-family: 'JetBrains Mono', monospace;">
+          Requirement: Min 8 chars, 1 digit (0-9), 1 special character (!@#$%^&*).
+        </small>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="id_confirm_password"><i class="fas fa-check-double"></i> Repeat Password</label>
+        {{ form.confirm_password }}
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; margin-top: 6px;">
+        <i class="fas fa-user-plus"></i> Complete Registration & Open Dashboard
+      </button>
+    </form>
+
+    <div style="text-align: center; margin-top: 20px; font-size: 0.88rem; color: var(--text-secondary);">
+      Already registered? <a href="{% url 'signin' %}" style="color: var(--accent-emerald); font-weight: 600; text-decoration: none;">Sign in here</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  const heightInput = document.getElementById('id_height_cm');
+  const weightInput = document.getElementById('id_weight_kg');
+  const bmiValEl = document.getElementById('liveBmiVal');
+  const bmiCatEl = document.getElementById('liveBmiCategory');
+
+  function calculateLiveBMI() {
+    const h = parseFloat(heightInput.value);
+    const w = parseFloat(weightInput.value);
+
+    if (h > 0 && w > 0) {
+      const heightM = h / 100.0;
+      const bmi = (w / (heightM * heightM)).toFixed(1);
+      bmiValEl.textContent = bmi;
+
+      let cat = "Normal Weight";
+      let bg = "#059669";
+      let color = "#FFFFFF";
+
+      if (bmi < 18.5) {
+        cat = "Underweight";
+        bg = "#D97706";
+      } else if (bmi >= 18.5 && bmi < 25.0) {
+        cat = "Normal Weight";
+        bg = "#059669";
+      } else if (bmi >= 25.0 && bmi < 30.0) {
+        cat = "Overweight";
+        bg = "#0284C7";
+      } else {
+        cat = "Obese";
+        bg = "#E11D48";
+      }
+
+      bmiCatEl.textContent = cat;
+      bmiCatEl.style.background = bg;
+      bmiCatEl.style.color = color;
+    }
+  }
+
+  if (heightInput && weightInput) {
+    heightInput.addEventListener('input', calculateLiveBMI);
+    weightInput.addEventListener('input', calculateLiveBMI);
+    calculateLiveBMI();
+  }
+</script>
+{% endblock %}
