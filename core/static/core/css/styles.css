@@ -457,6 +457,48 @@ body::before {
   box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.15);
 }
 
+/* Password View/Toggle Wrapper */
+.password-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.password-input-wrapper .form-input {
+  padding-right: 44px;
+  width: 100%;
+}
+
+.password-toggle-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 6px;
+  font-size: 0.95rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-xs);
+  transition: color 0.18s ease, transform 0.18s ease;
+  z-index: 2;
+  user-select: none;
+}
+
+.password-toggle-btn:hover {
+  color: var(--accent-emerald);
+}
+
+.password-toggle-btn:focus-visible {
+  outline: 2px solid var(--accent-emerald);
+  color: var(--accent-emerald);
+}
+
 .form-select option {
   background: #FFFFFF;
   color: var(--text-primary);

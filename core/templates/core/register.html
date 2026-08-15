@@ -97,7 +97,12 @@
       <!-- Passwords Grid -->
       <div class="form-group">
         <label class="form-label" for="id_password"><i class="fas fa-lock"></i> Password</label>
-        {{ form.password }}
+        <div class="password-input-wrapper">
+          {{ form.password }}
+          <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('id_password', this)" aria-label="Show password" title="Show password">
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
         <small style="color: var(--text-muted); font-size: 0.76rem; display: block; margin-top: 4px; font-family: 'JetBrains Mono', monospace;">
           Requirement: Min 8 chars, 1 digit (0-9), 1 special character (!@#$%^&*).
         </small>
@@ -105,7 +110,12 @@
 
       <div class="form-group">
         <label class="form-label" for="id_confirm_password"><i class="fas fa-check-double"></i> Repeat Password</label>
-        {{ form.confirm_password }}
+        <div class="password-input-wrapper">
+          {{ form.confirm_password }}
+          <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('id_confirm_password', this)" aria-label="Show password" title="Show password">
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
       </div>
 
       <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; margin-top: 6px;">
